@@ -123,7 +123,7 @@ router.get('/profile/:id', async (req, res) => {
 
     // request params 에서 데이터 가져오기
     const id = req.params.id;
-    const user = await User.filter(user => user.id === id)[0]
+    const user = User.filter(user => user.id === id)[0]
 
     // 존재하는 아이디인지 확인 - 없다면 No user 반환
     if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_USER));
