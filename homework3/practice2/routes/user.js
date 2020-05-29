@@ -5,6 +5,8 @@ let util = require('../modules/util');
 let statusCode = require('../modules/statusCode');
 let resMessage = require('../modules/responseMessage');
 
+// ??? 언제 async / await 을 쓰고 언제는 안쓰는지 너무 헷갈림.... ???
+
 /* 
     ✔️ sign up
     METHOD : POST
