@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
 // 유저 - 로그인 기능
 router.use('/user', require('./user'));
 
-// 포스터
+// 포스터 - 게시글 기능
 router.use('/user', require('./user'));
 
 module.exports = router;
