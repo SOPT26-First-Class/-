@@ -91,7 +91,7 @@ router.post('/signin', async (req, res) => {
     }
 
     // user 정보 데려오기
-    const user = await User.filter(user => user.id === id)[0]
+    const user = User.filter(user => user.id === id)[0]
     const passwordHash = await crypto.pbkdf2(password, user.salt.toString(), 1, 32, 'sha512').toString('hex');
 
     // 비밀번호 확인 - 일치하지 않으면 MISS_MATCH_PW
