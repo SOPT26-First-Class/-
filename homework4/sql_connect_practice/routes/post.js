@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-let Posts = require('../models/post');
-let util = require('../modules/util');
-let statusCode = require('../modules/statusCode');
-let resMessage = require('../modules/responseMessage');
+const express = require('express');
+const router = express.Router();
+const Post = require('../models/post');
+const util = require('../modules/util');
+const statusCode = require('../modules/statusCode');
+const resMessage = require('../modules/responseMessage');
 
 /*  
     postIdx: 0,
@@ -13,7 +13,8 @@ let resMessage = require('../modules/responseMessage');
 */
 
 /* 모든 게시글 조회  get : [ /post ] */
-router.get('/', function (req, res, next) {
+router.get('/', async (req, res, next) => {
+    const Posts = await Post.getAll()
     res.status(statusCode.OK)
         .send(util.success(statusCode.OK, resMessage.ALL_POST, Posts));
 });
@@ -32,14 +33,14 @@ router.get('/:id', async (req, res) => {
     }
 
     // id에 해당하는 게시글이 없다면
-    const post = posts.filter(post => post.postIdx === id);
+    const post = await Post.getPostById(id)
     if (post.length === 0) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_POST_IDX));
     }
 
     // 게시글 조회 성공
     res.status(statusCode.OK)
-        .send(util.success(statusCode.OK, resMessage.READ_POST, post));
+        .send(util.success(statusCode.OK, resMessage.READ_POST, post[0]));
 })
 
 /* 게시글 생성 post : [ /post ] */
@@ -56,17 +57,21 @@ router.post('/', async (req, res) => {
             .send(util.fail(statusCode.BAD_REQUEST, resMessage.NULL_VALUE));
         return;
     }
-    // 게시글 작성 성공
-    const postIdx = Posts.length;
-    Posts.push({
-        postIdx,
-        author,
-        title,
-        content
-    });
 
+    // Post 생성
+    const idx = await Post.create(authorId, title, content);
+    if (idx === -1) {
+        return res.status(statusCode.DB_ERROR)
+            .send(util.fail(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    }
+    // 게시물 작성 성공
     res.status(statusCode.OK)
-        .send(util.success(statusCode.OK, resMessage.CREATED_POST, Posts[Posts.length - 1]));
+        .send(util.success(statusCode.OK, resMessage.CREATED_POST, {
+            authorId: authorId,
+            title: title,
+            content: content
+        }));
+
 })
 
 /* 게시글 수정 put : [ /post/:id ] */
@@ -88,20 +93,26 @@ router.put('/:id', async (req, res) => {
     }
 
     // id에 해당하는 게시글이 없다면
-    if (Posts.findIndex(it => it.postIdx === id) === -1) {
-        res.status(statusCode.BAD_REQUEST)
-            .send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_POST_IDX));
-        return
+    const post = await Post.getPostById(id)
+    if (post.length === 0) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_POST_IDX));
     }
 
-    const postIdx = id;
-    posts[id] = {
-        postIdx,
-        author,
-        title,
-        content
-    };
-    res.status(statusCode.OK).send(util.success(statusCode.OK, resMessage.UPDATE_POST, Posts[id]))
+    const idx = await Post.update(id, authorId, title, content)
+    // 수정 실패
+    if (idx === -1) {
+        return res.status(statusCode.DB_ERROR)
+            .send(util.fail(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    }
+
+    // 수정된 게시글 불러오기
+    const newPost = await Post.getPostById(id);
+
+    if (post.length === 0) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_POST_IDX));
+    }
+    // 게시글 수정 성공
+    res.status(statusCode.OK).send(util.success(statusCode.OK, resMessage.UPDATE_POST, newPost[0]))
 })
 
 /* 게시글 삭제 delete : [ /post/:id ] */
@@ -118,15 +129,20 @@ router.delete('/:id', async (req, res) => {
     }
 
     // id에 해당하는 게시글이 없다면
-    if (Posts.findIndex(it => it.postIdx === id) === -1) {
-        res.status(statusCode.BAD_REQUEST)
-            .send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_POST_IDX));
-        return
+    const post = await Post.getPostById(id)
+    if (post.length === 0) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_POST_IDX));
     }
 
-    // id 값 제거
-    const nextPosts = posts.filter(it => it.postIdx !== id);
-    res.status(statusCode.OK).send(util.success(statusCode.OK, resMessage.DELETE_POST, nextPosts))
+    // Post 삭제
+    const idx = await Post.delete(id);
+    if (idx === -1) {
+        return res.status(statusCode.DB_ERROR)
+            .send(util.fail(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    }
+    // 게시물 삭제 성공
+    const Posts = await Post.getAll()
+    res.status(statusCode.OK).send(util.success(statusCode.OK, resMessage.DELETE_POST, Posts))
 })
 
 

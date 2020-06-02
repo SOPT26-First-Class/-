@@ -12,6 +12,6 @@ router.get('/', function (req, res, next) {
 router.use('/user', require('./user'));
 
 // 포스터 - 게시글 기능
-router.use('/user', require('./user'));
+router.use('/post', require('./post'));
 
 module.exports = router;
