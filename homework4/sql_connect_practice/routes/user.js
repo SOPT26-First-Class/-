@@ -1,9 +1,10 @@
-var express = require('express');
-var router = express.Router();
-let Users = require('../models/user');
-let util = require('../modules/util');
-let statusCode = require('../modules/statusCode');
-let resMessage = require('../modules/responseMessage');
+const crypto = require('crypto');
+const express = require('express');
+const router = express.Router();
+const Users = require('../models/user');
+const util = require('../modules/util');
+const statusCode = require('../modules/statusCode');
+const resMessage = require('../modules/responseMessage');
 
 // ??? 언제 async / await 을 쓰고 언제는 안쓰는지 너무 헷갈림.... ???
 
@@ -35,7 +36,8 @@ router.post('/signup', async (req, res) => {
     }
 
     //already ID
-    if (Users.checkUser(id)) {
+    const isAlready = await Users.checkUser(id)
+    if (isAlready) {
         res.status(statusCode.BAD_REQUEST)
             .send(util.fail(statusCode.BAD_REQUEST, resMessage.ALREADY_ID));
         return;
@@ -84,14 +86,16 @@ router.post('/signin', async (req, res) => {
     }
 
     // 존재하는 아이디인지 확인 없으면 NO-USER
-    if (!Users.checkUser(id)) {
+    const isUser = await Users.checkUser(id)
+    if (!isUser) {
         res.status(statusCode.BAD_REQUEST)
             .send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_USER));
         return;
     }
 
     // user 정보 데려오기
-    if (Users.signin(id, password)) {
+    const isMatch = await Users.signin(id, password)
+    if (isMatch) {
         //성공 - LOGIN_SUCCESS
         res.status(statusCode.OK)
             .send(util.success(statusCode.OK, resMessage.LOGIN_SUCCESS, {
@@ -123,13 +127,14 @@ router.get('/profile/:id', async (req, res) => {
     const id = req.params.id;
 
     // 존재하는 아이디인지 확인 - 없다면 No user 반환
-    if (!Users.checkUser(id)) {
+    const isUser = await Users.checkUser(id)
+    if (!isUser) {
         res.status(statusCode.BAD_REQUEST)
             .send(util.fail(statusCode.BAD_REQUEST, resMessage.NO_USER));
         return;
     }
 
-    const user = Users.getUserById(id)
+    const user = await Users.getUserById(id)
 
     // 성공 - login success와 함께 user Id 반환
     res.status(statusCode.OK).send(util.success(statusCode.OK, resMessage.READ_PROFILE_SUCCESS, user));

@@ -23,4 +23,7 @@ module.exports = {
     NO_POST_IDX: "해당 게시글 없음",
     UPDATE_POST: "게시글 수정 완료",
     DELETE_POST: "게시글 삭제 완료",
+
+    // 디비 관룐
+    DB_ERROR: "데이터베이스 오류"
 };

@@ -1,4 +1,5 @@
 const pool = require('../modules/pool');
+const crypto = require('crypto');
 const table = 'user';
 
 const user = {
@@ -9,6 +10,7 @@ const user = {
         const query = `INSERT INTO ${table}(${fields}) VALUES(${questions})`;
         try {
             const result = await pool.queryParamArr(query, values);
+            // console.log(result) 객체 반환, 데이터 삽입 실패시 -1 뜨는듯
             const insertId = result.insertId;
             return insertId;
         } catch (err) {
@@ -53,6 +55,7 @@ const user = {
 
         try {
             const user = await pool.queryParam(query);
+            // console.log(user) 배열로 나옴
             return user[0];
 
         } catch (err) {
