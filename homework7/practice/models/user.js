@@ -57,6 +57,17 @@ const user = {
             console.log('update profile ERROR : ', err);
             throw err;
         }
+    },
+    updateSefiles: async (location, userIdx) => {
+        const query = `INSERT INTO selfiles (url, userIdx) VALUES("${location}", ${userIdx})`;
+        try {
+            const result = await pool.queryParamArr(query);
+            const insertId = result.insertId;
+            return insertId;
+        } catch (err) {
+            console.log('updateSelfiles ERROR : ', err);
+            throw err;
+        }
     }
 }
 
