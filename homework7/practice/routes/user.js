@@ -3,6 +3,7 @@ const router = express.Router();
 const UserController = require('../controllers/user');
 const AuthMiddleware = require('../middlewares/auth');
 const upload = require('../modules/multer')
+const imageController = require('../controllers/image.js')
 
 router.post('/signup', UserController.signup);
 router.post('/signin', UserController.signin);
@@ -15,6 +16,7 @@ router.post('/signin', UserController.signin);
     REQUEST BODY : ⭐️image file ⭐️
     RESPONSE DATA : user profile
 */
-router.post('/profile', AuthMiddleware.checkToken, upload.array('profile'), UserController.updateProfile);
 
+router.post('/profile', AuthMiddleware.checkToken, upload.single('profile'), UserController.updateProfile);
+router.post('/selfies', AuthMiddleware.checkToken, upload.array('images', 4), imageController.array);
 module.exports = router;
