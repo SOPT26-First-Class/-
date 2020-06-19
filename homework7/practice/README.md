@@ -1,5 +1,8 @@
+# 여러개 이미지 디비저장
+<img width="347" alt="스크린샷 2020-06-20 오전 2 48 39" src="https://user-images.githubusercontent.com/22907830/85165648-1cbf4f80-b2a1-11ea-97be-e579eba94023.png">
 
-# 여러개 이미지
+
+# 여러개 이미지 포스트맨 테스트
 <img width="686" alt="스크린샷 2020-06-20 오전 1 41 14" src="https://user-images.githubusercontent.com/22907830/85159087-fc3ec780-b297-11ea-8e8e-3e66e0553487.png">
 
 # 합동세미나 Architecture
