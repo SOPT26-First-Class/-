@@ -15,6 +15,6 @@ router.post('/signin', UserController.signin);
     REQUEST BODY : ⭐️image file ⭐️
     RESPONSE DATA : user profile
 */
-router.post('/profile', AuthMiddleware.checkToken, upload.single('profile'), UserController.updateProfile);
+router.post('/profile', AuthMiddleware.checkToken, upload.array('profile'), UserController.updateProfile);
 
 module.exports = router;
